@@ -16,6 +16,16 @@ This acts as a sample for the libipt static library referenced above, and provid
 
 ## Motivation
 
+Existing Windows-focused research on Intel Processor Trace has resulted in many hand-crafted custom drivers to toggle the correct flags in the appropriate MSRs, and to register for performance interrupts to correctly handle delivery of tracing data. Unfortunately, most of these custom drivers suffer from security vulnerabilities, academic/proof-of-concept quality code, and don't handle edge and corner cases safely (as would be expected of non-commercial, paid, software!). Additionally, the techniques they use for enabling such functionality closely mimic malicious code, making it hard for defenders to distinguish between the intent of an Intel PT tracing driver, and a rootkit.
+
+Likely in response, in Windows 10 Version 1803 (Redstone 4), Microsoft added an Ipt.sys driver that enables Intel PT support for certain classes of ETW tracing operations. The support was incomplete, and mainly to handle this specific use case. In Windows 10, Version 1809 (Redstone 5), however, Microsoft has enhanced this driver to support non-ETW-based usage of Intel PT, and to configure both per-process (per-thread0 tracing as well as full per-core tracing, exposing many (but not all) of the Intel PT controls that normally get written into the appropriate MSR (such as allowing callers to enable MTC/TSC timing packets, or by configuring either Ring 0 or Ring 3 tracing).
+
+Currently, this support seems to be specific to PSS/OCA scenarios (Microsoft's crash analytics framework part of Windows Error Reporting, or WER) and undocumented, exposed only through a few external exports inside of Ntdll.dll and internal APIs inside of Faultrep.dll. As a result, I reverse engineered the internal IOCTL interface, the exported APIs, the tracing options and headers, and provide this library so that it may help those building PT-based tools to focus on the tracing data, and avoid having to become kernel programmers.
+
+## Caveat
+
+As per my previous note on existing drivers being of PoC-level quality, this repository is also a PoC and all of the libraries and tool presented here are provided with zero guarantees on their functionality, and no support (I will, however, strive to address PRs and other helpful comments!). Please do not ship commercial/enteprise/paid products using this library -- I am sure Microsoft and Intel will eventually ship an official set of APIs or SDK for such purposes.
+
 ## References
 
 For some highly recommended reading on Intel Processor Trace, I suggest reading the following presentations from Richard Johnson & Andrea Alevi:  [ref1](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html),  [ref2](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html),  [ref3](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html) as well as this presentation: [ref4](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html) by Matt Spisak. Other relevant research can be found [here](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html) and [here](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html).
