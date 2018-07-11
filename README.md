@@ -32,7 +32,7 @@ The official specification of Intel Processor Trace is available from [Intel](ht
 
 For some highly recommended reading on potential applications to security, I suggest reading the following presentations from Richard Johnson & Andrea Alevi: [Go Speed Tracer](https://talos-intelligence-site.s3.amazonaws.com/production/document_files/files/000/000/048/original/Go_Speed_Tracer.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXACIED2SPMSC7GA%2F20180711%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180711T075012Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7b8003bc3582e408522594913240c92a0608201f716f607111973d8c17eeafa2), [Harnessing Intel Processor Trace on Windows for Vulnerability Disclosure](https://conference.hitb.org/hitbsecconf2017ams/materials/D1T1%20-%20Richard%20Johnson%20-%20Harnessing%20Intel%20Processor%20Trace%20on%20Windows%20for%20Vulnerability%20Discovery.pdf) as well as this presentation: [COFI Break](https://gsec.hitb.org/materials/sg2016/D2%20-%20Shlomi%20Oberman%20and%20Ron%20Shina%20-%20Breaking%20Exploits%20with%20Practical%20Control%20Flow%20Integrity.pdf) by Shlomi Oberman and Ron Shina. 
 
-You can also get the unofficial driver which Andrea and Richard collaborate on from [GitHub](https://github.com/intelpt/WindowsIntelPT)
+You can also get the unofficial driver which Andrea and Richard collaborated on from [GitHub](https://github.com/intelpt/WindowsIntelPT).
 
 Other relevant research on Intel PT security applications can be found from Microsoft Research [GRIFFIN](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/01/griffin-asplos17.pdf) and from Shanghai University [FlowGuard](https://ipads.se.sjtu.edu.cn/lib/exe/fetch.php?media=publications:flowguard.pdf).
 
