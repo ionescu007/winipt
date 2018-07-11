@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ipttool", "ipttool\ipttool.
 		{051DE316-C76C-4CFC-82DA-46C0B04CFAD8} = {051DE316-C76C-4CFC-82DA-46C0B04CFAD8}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libipt", "libiptnt\libiptnt.vcxproj", "{393053BA-CA0E-4506-B415-87034C4A7093}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -19,6 +21,8 @@ Global
 		{051DE316-C76C-4CFC-82DA-46C0B04CFAD8}.Release|x64.Build.0 = Release|x64
 		{1B5BE021-FB5F-4792-AF04-39BF7705886E}.Release|x64.ActiveCfg = Release|x64
 		{1B5BE021-FB5F-4792-AF04-39BF7705886E}.Release|x64.Build.0 = Release|x64
+		{393053BA-CA0E-4506-B415-87034C4A7093}.Release|x64.ActiveCfg = Release|x64
+		{393053BA-CA0E-4506-B415-87034C4A7093}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

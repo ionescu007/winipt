@@ -61,88 +61,88 @@ typedef union _IPT_OPTIONS
 {
     struct
     {
-        DWORDLONG OptionVersion : 4;    // Must be set to 1
-        DWORDLONG TimingSettings : 4;   // IPT_TIMING_SETTINGS
+        ULONGLONG OptionVersion : 4;    // Must be set to 1
+        ULONGLONG TimingSettings : 4;   // IPT_TIMING_SETTINGS
 
-        DWORDLONG MtcFrequency : 4;     // Bits 14:17 in IA32_RTIT_CTL
-        DWORDLONG CycThreshold : 4;     // Bits 19:22 in IA32_RTIT_CTL
+        ULONGLONG MtcFrequency : 4;     // Bits 14:17 in IA32_RTIT_CTL
+        ULONGLONG CycThreshold : 4;     // Bits 19:22 in IA32_RTIT_CTL
 
-        DWORDLONG TopaPagesPow2 : 4;    // Size of buffer in ToPA, as 4KB powers of 2 (4KB->128MB). Multiple buffers will be used if CPUID.(EAX=014H,ECX=0H):ECX[1]= 1
-        DWORDLONG MatchSettings: 3;     // IPT_MATCH_SETTINGS
-        DWORDLONG Inherit : 1;          // Children will be automatically added to the trace
+        ULONGLONG TopaPagesPow2 : 4;    // Size of buffer in ToPA, as 4KB powers of 2 (4KB->128MB). Multiple buffers will be used if CPUID.(EAX=014H,ECX=0H):ECX[1]= 1
+        ULONGLONG MatchSettings: 3;     // IPT_MATCH_SETTINGS
+        ULONGLONG Inherit : 1;          // Children will be automatically added to the trace
 
-        DWORDLONG ModeSettings : 4;     // IPT_MODE_SETTINGS
-        DWORDLONG Reserved : 36;
+        ULONGLONG ModeSettings : 4;     // IPT_MODE_SETTINGS
+        ULONGLONG Reserved : 36;
     };
-    DWORDLONG AsULonglong;
+    ULONGLONG AsULonglong;
 } IPT_OPTIONS, *PIPT_OPTIONS;
 C_ASSERT(sizeof(IPT_OPTIONS) == 8);
 
 typedef struct _IPT_TRACE_DATA
 {
-    WORD TraceVersion;
-    WORD ValidTrace;
+    USHORT TraceVersion;
+    USHORT ValidTrace;
     ULONG TraceSize;
-    BYTE TraceData[ANYSIZE_ARRAY];
+    UCHAR TraceData[ANYSIZE_ARRAY];
 } IPT_TRACE_DATA, *PIPT_TRACE_DATA;
 
 typedef struct _IPT_TRACE_HEADER
 {
     HANDLE ThreadId;
     IPT_TIMING_SETTINGS TimingSettings;
-    DWORD MtcFrequency;
-    DWORD FrequencyToTscRatio;
-    DWORD UnknownSize;
-    DWORD TraceSize;
-    BYTE Trace[ANYSIZE_ARRAY];
+    ULONG MtcFrequency;
+    ULONG FrequencyToTscRatio;
+    ULONG UnknownSize;
+    ULONG TraceSize;
+    UCHAR Trace[ANYSIZE_ARRAY];
 } IPT_TRACE_HEADER, *PIPT_TRACE_HEADER;
 
-BOOL
+NTSTATUS
 GetIptBufferVersion (
-    _Out_ PDWORD pdwBufferMajorVersion
+    _Out_ PULONG BufferMajorVersion
 );
 
-BOOL
+NTSTATUS
 GetIptTraceVersion (
-    _Out_ PWORD pwTraceVersion
+    _Out_ PUSHORT TraceVersion
 );
 
-BOOL
+NTSTATUS
 GetProcessIptTraceSize (
-    _In_ HANDLE hProcess,
-    _Out_ PDWORD pdwTraceSize
+    _In_ HANDLE ProcessHandle,
+    _Out_ PULONG TraceSize
 );
 
-BOOL
+NTSTATUS
 GetProcessIptTrace (
-    _In_ HANDLE hProcess,
-    _In_ PVOID pTrace,
-    _In_ DWORD dwTraceSize
+    _In_ HANDLE ProcessHandle,
+    _In_ PVOID Trace,
+    _In_ ULONG TraceSize
 );
 
-BOOL
+NTSTATUS
 StartProcessIptTrace (
-    _In_ HANDLE hProcess,
-    _In_ IPT_OPTIONS ullOptions
+    _In_ HANDLE ProcessHandle,
+    _In_ IPT_OPTIONS Options
 );
 
-BOOL
+NTSTATUS
 StopProcessIptTrace (
-    _In_ HANDLE hProcess
+    _In_ HANDLE ProcessHandle
 );
 
-BOOL
+NTSTATUS
 StartCoreIptTracing (
-    _In_ IPT_OPTIONS ullOptions,
-    _In_ DWORD dwNumberOfTries,
-    _In_ DWORD dwTraceDurationInSeconds
+    _In_ IPT_OPTIONS Options,
+    _In_ ULONG NumberOfTries,
+    _In_ ULONG TraceDurationInSeconds
 );
 
-BOOL
+NTSTATUS
 RegisterExtendedImageForIptTracing (
-    _In_ PWCHAR pwszImagePath,
-    _In_opt_ PWCHAR pwszFilteredPath,
-    _In_ IPT_OPTIONS ullOptions,
-    _In_ DWORD dwNumberOfTries,
-    _In_ DWORD dwTraceDurationInSeconds
+    _In_ PWCHAR ImagePath,
+    _In_opt_ PWCHAR FilteredPath,
+    _In_ IPT_OPTIONS Options,
+    _In_ ULONG NumberOfTries,
+    _In_ ULONG TraceDurationInSeconds
 );
