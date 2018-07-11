@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27825.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libipt", "libipt\libipt.vcxproj", "{051DE316-C76C-4CFC-82DA-46C0B04CFAD8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ipttool", "ipttool\ipttool.vcxproj", "{1B5BE021-FB5F-4792-AF04-39BF7705886E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{051DE316-C76C-4CFC-82DA-46C0B04CFAD8} = {051DE316-C76C-4CFC-82DA-46C0B04CFAD8}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{051DE316-C76C-4CFC-82DA-46C0B04CFAD8}.Release|x64.ActiveCfg = Release|x64
+		{051DE316-C76C-4CFC-82DA-46C0B04CFAD8}.Release|x64.Build.0 = Release|x64
+		{1B5BE021-FB5F-4792-AF04-39BF7705886E}.Release|x64.ActiveCfg = Release|x64
+		{1B5BE021-FB5F-4792-AF04-39BF7705886E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19EF0305-DC28-4577-B041-40382D6A1D54}
+	EndGlobalSection
+EndGlobal
