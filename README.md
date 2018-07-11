@@ -1,13 +1,13 @@
 # WinIPT
 The Windows Library for Intel Process Trace (WinIPT) is a project that leverages the new Intel Processor Trace functionality exposed by Windows 10 Redstone 5 (1809), currently in the Windows Insider Preview (WIP). The new operating system now includes the old inbox Intel PT driver (ipt.sys) with additional code that allows configuring both per-process and per-core tracing through an IOCTL and registry mechanism, instead of relying on undocumented ETW internals. In this repository, you will find the following 3 projects:
 
-* libipt
+* `libipt`
 This is the Win32 API version of the library which grants access to the IPT Driver/Service IOCTLs that enable per-core and per-process tracing with the new facilities exposed by Windows. This library uses Win32 semantics & notation, and its functions are re-implementations of some of the functions that were found in Dbghelp.dll, Dbgcore.dll, Faultrep.dll and Ntdll.dll.
 
-* libiptnt
+* `libiptnt`
 This is the native NT API version of the same library as above, which uses only Ntdll.dll functions, making it suitable for use in Native/non-Win32 applications. This library uses NT-style semantics & notication, and its functions are almost identical to the ones exposed by the libraries listed above.
 
-* ipttool
+* `ipttool`
 This acts as a sample for the libipt static library referenced above, and provides a simple CLI utility around starting, stopping, and querying traces for a given process. It does not currently support core tracing, and it does not do decoding -- please use the Intel PT library for that.
 
 ## Screenshot
@@ -18,7 +18,7 @@ This acts as a sample for the libipt static library referenced above, and provid
 
 ## References
 
-For some highly recommended reading on Intel Processor Trace, I recommend reading the following presentations from Richard Johnson & Andrea Alevi, as well as by Matt Spisak. Other relevant research can be found here and here.
+For some highly recommended reading on Intel Processor Trace, I recommend reading the following presentations from Richard Johnson & Andrea Alevi:  [ref1](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html),  [ref2](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html),  [ref3](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html) as well as this presentation: [ref4](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html) by Matt Spisak. Other relevant research can be found [here](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html) and [here](https://googleprojectzero.blogspot.com/2018/01/reading-privileged-memory-with-side.html).
 
 If you would like to know more about my research or work, I invite you to check out my blog at [http://www.alex-ionescu.com](http://www.alex-ionescu.com) as well as my training & consulting company, Winsider Seminars & Solutions Inc., at [http://www.windows-internals.com](http://www.windows-internals.com).
 
