@@ -92,7 +92,7 @@ typedef struct _IPT_TRACE_HEADER
     IPT_TIMING_SETTINGS TimingSettings;
     DWORD MtcFrequency;
     DWORD FrequencyToTscRatio;
-    DWORD UnknownSize;
+    DWORD RingBufferOffset;
     DWORD TraceSize;
     BYTE Trace[ANYSIZE_ARRAY];
 } IPT_TRACE_HEADER, *PIPT_TRACE_HEADER;
