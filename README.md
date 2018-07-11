@@ -12,7 +12,7 @@ This acts as a sample for the libipt static library referenced above, and provid
 
 ## Screenshot
 
-![Screenshot](ipt-shot.png)
+![Screenshot](ipt-trace.png)
 
 ## Motivation
 
