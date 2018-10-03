@@ -121,13 +121,13 @@ GetProcessIptTrace (
 );
 
 BOOL
-StartProcessIptTrace (
+StartProcessIptTracing (
     _In_ HANDLE hProcess,
     _In_ IPT_OPTIONS ullOptions
 );
 
 BOOL
-StopProcessIptTrace (
+StopProcessIptTracing (
     _In_ HANDLE hProcess
 );
 
@@ -145,4 +145,27 @@ RegisterExtendedImageForIptTracing (
     _In_ IPT_OPTIONS ullOptions,
     _In_ DWORD dwNumberOfTries,
     _In_ DWORD dwTraceDurationInSeconds
+);
+
+BOOL
+PauseThreadIptTracing (
+    _In_ HANDLE hThread,
+    _In_ PBOOLEAN pbResult
+);
+
+BOOL
+ResumeThreadIptTracing (
+    _In_ HANDLE hThread,
+    _In_ PBOOLEAN pbResult
+);
+
+BOOL
+QueryProcessIptTracing (
+    _In_ HANDLE hProcess,
+    _Out_ PIPT_OPTIONS pullOptions
+);
+
+BOOL
+QueryCoreIptTracing (
+    _Out_ PIPT_OPTIONS pullOptions
 );

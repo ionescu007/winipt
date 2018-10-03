@@ -14,6 +14,10 @@ typedef enum _IPT_INPUT_TYPE
     IptRegisterExtendedImageForTracing,
     IptStartProcessTrace,
     IptStopProcessTrace,
+    IptPauseThreadTrace,
+    IptResumeThreadTrace,
+    IptQueryProcessTrace,
+    IptQueryCoreTrace
 } IPT_INPUT_TYPE, *PIPT_INPUT_TYPE;
 
 //
@@ -68,6 +72,18 @@ typedef struct _IPT_INPUT_BUFFER
         {
             HANDLE ProcessHandle;
         } StopProcessIptTrace;
+        struct
+        {
+            HANDLE ThreadHandle;
+        } PauseThreadIptTrace;
+        struct
+        {
+            HANDLE ThreadHandle;
+        } ResumeThreadIptTrace;
+        struct
+        {
+            HANDLE ProcessHandle;
+        } QueryProcessIptTrace;
     };
 } IPT_INPUT_BUFFER, *PIPT_INPUT_BUFFER;
 C_ASSERT(sizeof(IPT_INPUT_BUFFER) == 0x28);
@@ -96,6 +112,22 @@ typedef struct _IPT_OUTPUT_BUFFER
         {
             IPT_TRACE_DATA;
         } GetTrace;
+        struct
+        {
+            BOOLEAN OldState;
+        } PauseTrace;
+        struct
+        {
+            BOOLEAN OldState;
+        } ResumeTrace;
+        struct
+        {
+            IPT_OPTIONS Options;
+        } QueryProcessTrace;
+        struct
+        {
+            IPT_OPTIONS Options;
+        } QueryCoreTrace;
     };
 } IPT_OUTPUT_BUFFER, *PIPT_OUTPUT_BUFFER;
 C_ASSERT(sizeof(IPT_OUTPUT_BUFFER) == 0x10);
