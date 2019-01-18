@@ -41,11 +41,13 @@ typedef struct _IPT_INPUT_BUFFER
         struct
         {
             USHORT TraceVersion;
+            BYTE padding[6];
             HANDLE ProcessHandle;
         } GetProcessIptTraceSize;
         struct
         {
             USHORT TraceVersion;
+            BYTE padding[6];
             HANDLE ProcessHandle;
         } GetProcessIptTrace;
         struct
