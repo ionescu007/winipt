@@ -88,7 +88,7 @@ typedef struct _IPT_TRACE_DATA
 
 typedef struct _IPT_TRACE_HEADER
 {
-    HANDLE ThreadId;
+    DWORD64 ThreadId;
     IPT_TIMING_SETTINGS TimingSettings;
     DWORD MtcFrequency;
     DWORD FrequencyToTscRatio;

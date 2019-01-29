@@ -41,12 +41,12 @@ typedef struct _IPT_INPUT_BUFFER
         struct
         {
             USHORT TraceVersion;
-            HANDLE ProcessHandle;
+            ULONG64 ProcessHandle;
         } GetProcessIptTraceSize;
         struct
         {
             USHORT TraceVersion;
-            HANDLE ProcessHandle;
+            ULONG64 ProcessHandle;
         } GetProcessIptTrace;
         struct
         {
@@ -65,24 +65,24 @@ typedef struct _IPT_INPUT_BUFFER
         } RegisterExtendedImageForIptTracing;
         struct
         {
-            HANDLE ProcessHandle;
+            ULONG64 ProcessHandle;
             IPT_OPTIONS Options;
         } StartProcessIptTrace;
         struct
         {
-            HANDLE ProcessHandle;
+            ULONG64 ProcessHandle;
         } StopProcessIptTrace;
         struct
         {
-            HANDLE ThreadHandle;
+            ULONG64 ThreadHandle;
         } PauseThreadIptTrace;
         struct
         {
-            HANDLE ThreadHandle;
+            ULONG64 ThreadHandle;
         } ResumeThreadIptTrace;
         struct
         {
-            HANDLE ProcessHandle;
+            ULONG64 ProcessHandle;
         } QueryProcessIptTrace;
     };
 } IPT_INPUT_BUFFER, *PIPT_INPUT_BUFFER;
