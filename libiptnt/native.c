@@ -302,7 +302,7 @@ GetProcessIptTrace (
 }
 
 NTSTATUS
-StartProcessIptTrace (
+StartProcessIptTracing (
     _In_ HANDLE ProcessHandle,
     _In_ IPT_OPTIONS Options
     )
@@ -341,7 +341,7 @@ StartProcessIptTrace (
 }
 
 NTSTATUS
-StopProcessIptTrace (
+StopProcessIptTracing (
     _In_ HANDLE ProcessHandle
     )
 {
@@ -701,6 +701,153 @@ QueryCoreIptTracing (
             // Return the current set of options that are active
             //
             *Options = outputBuffer.QueryCoreTrace.Options;
+        }
+        NtClose(iptHandle);
+    }
+    return status;
+}
+
+NTSTATUS
+StopTraceOnEachCore (
+    VOID
+    )
+{
+    NTSTATUS status;
+    IO_STATUS_BLOCK ioStatusBlock;
+    HANDLE iptHandle;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    status = OpenIptDevice(&iptHandle);
+    if (NT_SUCCESS(status))
+    {
+        InitializeIptBuffer(&inputBuffer, IptStopTraceOnEachCore);
+        status = NtDeviceIoControlFile(iptHandle,
+            NULL,
+            NULL,
+            NULL,
+            &ioStatusBlock,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer));
+        NtClose(iptHandle);
+    }
+    return status;
+}
+
+NTSTATUS
+ConfigureThreadAddressFilterRange (
+    _In_ HANDLE ThreadHandle,
+    _In_ ULONG RangeIndex,
+    _In_ IPT_FILTER_RANGE_SETTINGS RangeConfig,
+    _In_ ULONG64 StartAddress,
+    _In_ ULONG64 EndAddress
+    )
+{
+    NTSTATUS status;
+    IO_STATUS_BLOCK ioStatusBlock;
+    HANDLE iptHandle;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    status = OpenIptDevice(&iptHandle);
+    if (NT_SUCCESS(status))
+    {
+        InitializeIptBuffer(&inputBuffer, IptConfigureThreadAddressFilterRange);
+        inputBuffer.ConfigureThreadAddressFilterRange.ThreadHandle = (ULONG64)ThreadHandle;
+        inputBuffer.ConfigureThreadAddressFilterRange.RangeIndex = RangeIndex;
+        inputBuffer.ConfigureThreadAddressFilterRange.RangeConfig = RangeConfig;
+        inputBuffer.ConfigureThreadAddressFilterRange.StartAddress = StartAddress;
+        inputBuffer.ConfigureThreadAddressFilterRange.EndAddress = EndAddress;
+        status = NtDeviceIoControlFile(iptHandle,
+            NULL,
+            NULL,
+            NULL,
+            &ioStatusBlock,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer));
+        NtClose(iptHandle);
+    }
+    return status;
+}
+
+NTSTATUS
+QueryThreadAddressFilterRange (
+    _In_ HANDLE ThreadHandle,
+    _In_ ULONG RangeIndex,
+    _Out_ PIPT_FILTER_RANGE_SETTINGS RangeConfig,
+    _Out_ PULONG64 StartAddress,
+    _Out_ PULONG64 EndAddress
+    )
+{
+    NTSTATUS status;
+    IO_STATUS_BLOCK ioStatusBlock;
+    HANDLE iptHandle;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    status = OpenIptDevice(&iptHandle);
+    if (NT_SUCCESS(status))
+    {
+        InitializeIptBuffer(&inputBuffer, IptQueryThreadAddressFilterRange);
+        inputBuffer.QueryThreadAddressFilterRange.ThreadHandle = (ULONG64)ThreadHandle;
+        inputBuffer.QueryThreadAddressFilterRange.RangeIndex = RangeIndex;
+        status = NtDeviceIoControlFile(iptHandle,
+            NULL,
+            NULL,
+            NULL,
+            &ioStatusBlock,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer));
+        if (NT_SUCCESS(status))
+        {
+            *RangeConfig = outputBuffer.QueryThreadAddressFilterRange.RangeConfig;
+            *StartAddress = outputBuffer.QueryThreadAddressFilterRange.StartAddress;
+            *EndAddress = outputBuffer.QueryThreadAddressFilterRange.EndAddress;
+        }
+        NtClose(iptHandle);
+    }
+    return status;
+}
+
+NTSTATUS
+QueryThreadTraceStopRangeEntered (
+    _In_ HANDLE ThreadHandle,
+    _Out_ PBOOLEAN TraceStopRangeEntered
+    )
+{
+    NTSTATUS status;
+    IO_STATUS_BLOCK ioStatusBlock;
+    HANDLE iptHandle;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    status = OpenIptDevice(&iptHandle);
+    if (NT_SUCCESS(status))
+    {
+        InitializeIptBuffer(&inputBuffer, IptQueryThreadTraceStopRangeEntered);
+        inputBuffer.QueryThreadTraceStopRangeEntered.ThreadHandle = (ULONG64)ThreadHandle;
+        status = NtDeviceIoControlFile(iptHandle,
+            NULL,
+            NULL,
+            NULL,
+            &ioStatusBlock,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer));
+        if (NT_SUCCESS(status))
+        {
+            *TraceStopRangeEntered = outputBuffer.QueryThreadTraceStopRangeEntered.TraceStopRangeEntered;
         }
         NtClose(iptHandle);
     }

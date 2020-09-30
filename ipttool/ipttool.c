@@ -20,7 +20,10 @@ typedef enum _IPT_TL_ACTION
     IptTlGetTrace,
     IptTlQueryTrace,
     IptTlPauseTrace,
-    IptTlResumeTrace
+    IptTlResumeTrace,
+    IptTlConfigureFilter,
+    IptTlQueryFilter,
+    IptTlQueryTraceStop,
 } IPT_TL_ACTION;
 
 FORCEINLINE
@@ -440,6 +443,11 @@ wmain (
     DWORD dwEntries;
     UINT i;
     BOOLEAN result;
+    DWORD dwRangeIndex;
+    IPT_FILTER_RANGE_SETTINGS dwRangeConfig;
+    DWORD64 ullStartAddress;
+    DWORD64 ullEndAddress;
+    BOOLEAN bTraceStop;
 
     //
     // Setup cleanup path
@@ -451,16 +459,20 @@ wmain (
     dwResult = 0xFFFFFFFF;
     options.AsULonglong = 0;
     result = 0;
+    dwRangeIndex = 0;
+    dwRangeConfig = IptFilterRangeDisable;
+    ullStartAddress = 0;
+    ullEndAddress = 0;
 
     //
     // Shameless banner header
     //
-    wprintf(L"/-----------------------------------------\\\n");
-    wprintf(L"|=== Windows 10 RS5 1809 IPT Test Tool ===|\n");
-    wprintf(L"|===  Copyright (c) 2018 Alex Ionescu  ===|\n");
-    wprintf(L"|===    http://github.com/ionescu007   ===|\n");
-    wprintf(L"|===  http://www.windows-internals.com ===|\n");
-    wprintf(L"\\-----------------------------------------/\n");
+    wprintf(L"/------------------------------------------\\\n");
+    wprintf(L"|=== Windows 10 RS5 1809+ IPT Test Tool ===|\n");
+    wprintf(L"|===  Copyright (c) 2018 Alex Ionescu   ===|\n");
+    wprintf(L"|===    http://github.com/ionescu007    ===|\n");
+    wprintf(L"|===  http://www.windows-internals.com  ===|\n");
+    wprintf(L"\\------------------------------------------/\n");
     wprintf(L"\n");
 
     //
@@ -469,33 +481,38 @@ wmain (
     if (dwArgumentCount <= 1)
     {
 Banner:
-        wprintf(L"Usage: IptTool.exe [action] <PID> <Flags>\n");
-        wprintf(L"       --start <PID> <Size> <Flags>     "
-                L"Starts Intel PT tracing for the given PID\n");
-        wprintf(L"                                        "
-                L"Size should be a power of two between 4KB-128MB in bytes\n");
-        wprintf(L"                                        "
-                L"Flag 0x00 - No Timing Packets, Trace only User Mode Code\n"
-                L"                                        "
-                L"Flag 0x01 - Enable MTC Timing Packets\n"
-                L"                                        "
-                L"Flag 0x02 - Enable CYC Timing Packets\n"
-                L"                                        "
-                L"Flag 0x04 - Trace only Kernel Mode Code\n"
-                L"                                        "
-                L"Flag 0x08 - Trace both User and Kernel Mode Code\n");
-        wprintf(L"       --trace <PID> <File>             "
-                L"Writes into the given file the current trace data for the given PID\n");
-        wprintf(L"       --stop <PID>                     "
-                L"Stops Intel PT tracing for the specified PID\n");
-        wprintf(L"       --query <PID>                    "
-                L"Queries the status of Intel PT tracing for the specified PID\n");
-        wprintf(L"       --pause <TID>                    "
-                L"Pauses Intel PT tracing for the specified TID\n");
-        wprintf(L"       --resume <TID>                   "
-                L"Resumes Intel PT tracing for the specified TID\n");
-        wprintf(L"\n");
-        wprintf(L"All operations require PROCESS_VM_READ rights to the target PID\n"
+        wprintf(L"Usage: IptTool.exe [action]\n"
+                L"\n"
+                L"Actions:\n"
+                L"--start <PID> <Size> <Flags>\n"
+                L"    Starts Intel PT tracing for the given PID\n"
+                L"    Size should be a power of two between 4KB-128MB in bytes\n"
+                L"    Flag 0x00 - No Timing Packets, Trace only User Mode Code\n"
+                L"    Flag 0x01 - Enable MTC Timing Packets\n"
+                L"    Flag 0x02 - Enable CYC Timing Packets\n"
+                L"    Flag 0x04 - Trace only Kernel Mode Code\n"
+                L"    Flag 0x08 - Trace both User and Kernel Mode Code\n"
+                L"--trace <PID> <File>\n"
+                L"    Writes into the given file the current trace data for the given PID\n"
+                L"--stop <PID>\n"
+                L"    Stops Intel PT tracing for the specified PID\n"
+                L"--query <PID>\n"
+                L"    Queries the status of Intel PT tracing for the specified PID\n"
+                L"--pause <TID>\n"
+                L"    Pauses Intel PT tracing for the specified TID\n"
+                L"--resume <TID>\n"
+                L"    Resumes Intel PT tracing for the specified TID\n"
+                L"--filter <TID> <RangeIndex> <StartAddress> <EndAddress> <Flags>\n"
+                L"    Configures address range filtering for the specified TID\n"
+                L"    Flag 0x00 - Disable address range filtering\n"
+                L"    Flag 0x01 - Enable filtering by IP\n"
+                L"    Flag 0x02 - Configure range as TraceStop condition\n"
+                L"--query-filter <TID> <RangeIndex>\n"
+                L"    Queries address range filtering status for the specified PID and RangeIndex\n"
+                L"--query-stop <TID>\n"
+                L"    Check if TraceStop has been triggered for the specified PID\n"
+                L"\n"
+                L"All operations require PROCESS_VM_READ rights to the target PID\n"
                 L"or THREAD_GET_CONTEXT rights to the target TID, respectively\n");
         goto Cleanup;
     }
@@ -687,6 +704,68 @@ Banner:
         // We are resuming thread trace, once we know the driver works
         //
         dwAction = IptTlResumeTrace;
+    }
+    else if (wcscmp(pwszArguments[1], L"--filter") == 0)
+    {
+        if (dwArgumentCount != 7)
+        {
+            goto Banner;
+        }
+        
+        bRes = ConfigureThread(pwszArguments[2], &hThread);
+        if (bRes == FALSE)
+        {
+            goto Cleanup;
+        }
+
+        dwRangeIndex = wcstoul(pwszArguments[3], NULL, 0);
+        ullStartAddress = wcstoull(pwszArguments[4], NULL, 16);
+        ullEndAddress = wcstoull(pwszArguments[5], NULL, 16);
+        if (ullStartAddress >= ullEndAddress)
+        {
+            wprintf(L"[-] Invalid range: %016llX-%016llX\n", ullStartAddress, ullEndAddress);
+            goto Cleanup;
+        }
+
+        dwRangeConfig = wcstoull(pwszArguments[6], NULL, 0);
+        if (dwRangeConfig != IptFilterRangeDisable && dwRangeConfig != IptFilterRangeIp && dwRangeConfig != IptFilterRangeTraceStop)
+        {
+            wprintf(L"[-] Invalid flags: %u\n", dwRangeConfig);
+            goto Cleanup;
+        }
+
+        dwAction = IptTlConfigureFilter;
+    }
+    else if (wcscmp(pwszArguments[1], L"--query-filter") == 0)
+    {
+        if (dwArgumentCount != 4)
+        {
+            goto Banner;
+        }
+
+        bRes = ConfigureThread(pwszArguments[2], &hThread);
+        if (bRes == FALSE)
+        {
+            goto Cleanup;
+        }
+
+        dwRangeIndex = wcstoul(pwszArguments[3], NULL, 0);
+        dwAction = IptTlQueryFilter;
+    }
+    else if (wcscmp(pwszArguments[1], L"--query-stop") == 0)
+    {
+        if (dwArgumentCount != 3)
+        {
+            goto Banner;
+        }
+
+        bRes = ConfigureThread(pwszArguments[2], &hThread);
+        if (bRes == FALSE)
+        {
+            goto Cleanup;
+        }
+
+        dwAction = IptTlQueryTraceStop;
     }
     else
     {
@@ -928,6 +1007,66 @@ Banner:
             wprintf(L"[+] Trace for PID %s written to %s\n",
                     pwszArguments[2],
                     pwszArguments[3]);
+            dwResult = 0;
+            break;
+        }
+
+        case IptTlConfigureFilter:
+        {
+            bRes = ConfigureThreadAddressFilterRange(hThread, dwRangeIndex, dwRangeConfig, ullStartAddress, ullEndAddress);
+            if (bRes == FALSE)
+            {
+                wprintf(L"[-] Failed to configure address filter range (err=%d)\n",
+                    GetLastError());
+                goto Cleanup;
+            }
+
+            wprintf(L"[+] Address range filter configured successfully for TID %s\n",
+                pwszArguments[2]);
+            dwResult = 0;
+            break;
+        }
+
+        case IptTlQueryFilter:
+        {
+            bRes = QueryThreadAddressFilterRange(hThread, dwRangeIndex, &dwRangeConfig, &ullStartAddress, &ullEndAddress);
+            if (bRes == FALSE)
+            {
+                wprintf(L"[-] Failed to query address filter range (err=%d)\n",
+                    GetLastError());
+                goto Cleanup;
+            }
+
+            wprintf(L"[+] Address range filter #%u for TID %s:\n"
+                    L"    Range: %016llX-%016llX\n"
+                    L"    Type: %s\n",
+                    dwRangeIndex,
+                    pwszArguments[2],
+                    ullStartAddress,
+                    ullEndAddress,
+                    dwRangeConfig == IptFilterRangeDisable ? L"Disabled" : (dwRangeConfig == IptFilterRangeIp ? L"IP" : L"TraceStop"));
+            dwResult = 0;
+            break;
+        }
+
+        case IptTlQueryTraceStop:
+        {
+            bRes = QueryThreadTraceStopRangeEntered(hThread, &bTraceStop);
+            if (bRes == FALSE)
+            {
+                wprintf(L"[-] Failed to query address filter range (err=%d)\n",
+                    GetLastError());
+                goto Cleanup;
+            }
+
+            if (bTraceStop != FALSE)
+            {
+                wprintf(L"[+] TraceStop has been triggered for TID %s\n", pwszArguments[2]);
+            }
+            else
+            {
+                wprintf(L"[+] TraceStop has NOT been triggered for TID %s\n", pwszArguments[2]);
+            }
             dwResult = 0;
             break;
         }

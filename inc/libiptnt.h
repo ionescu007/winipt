@@ -25,7 +25,7 @@ typedef enum _IPT_MATCH_SETTINGS
     IptMatchByImageFileName,
     IptMatchByAnyPackage,
     IptMatchByPackageName,
-} IPT_MATCH_SETTINGS;
+} IPT_MATCH_SETTINGS, *PIPT_MATCH_SETTINGS;
 
 //
 // See GetIptOptionForTracingThreads vs GetIptOptionForTracingCores
@@ -45,14 +45,21 @@ typedef enum _IPT_MODE_SETTINGS
     IptRegUserModeOnly,                 // Sets BranchEn[2000], ToPA[100], User[8]
     IptRegKernelModeOnly,               // Sets BranchEn[2000], ToPA[100], OS[4]
     IptRegUserAndKernelMode,            // Sets BranchEn[2000], ToPA[100], User[8], OS[4]
-} IPT_MODE_SETTINGS;
+} IPT_MODE_SETTINGS, *PIPT_MODE_SETTINGS;
 
 typedef enum IPT_TIMING_SETTINGS
 {
     IptNoTimingPackets,                 // No additional IA32_RTIT_CTL bits enabled
     IptEnableMtcPackets,                // Sets MTCEn[400], TSCEn[200]. Requires CPUID.(EAX=014H,ECX=0H):EBX[3]= 1
     IptEnableCycPackets                 // Sets MTCEn[400], TSCEn[200], CYCEn[2]. Requires CPUID.(EAX=014H,ECX=0H):EBX[1]= 1
-} IPT_TIMING_SETTINGS;
+} IPT_TIMING_SETTINGS, *PIPT_TIMING_SETTINGS;
+
+typedef enum _IPT_FILTER_RANGE_SETTINGS
+{
+    IptFilterRangeDisable,              // Sets ADDRn_CFG[0]
+    IptFilterRangeIp,                   // Sets ADDRn_CFG[1]
+    IptFilterRangeTraceStop,            // Sets ADDRn_CFG[2]
+} IPT_FILTER_RANGE_SETTINGS, *PIPT_FILTER_RANGE_SETTINGS;
 
 //
 // See CheckIptOption
@@ -121,13 +128,13 @@ GetProcessIptTrace (
 );
 
 NTSTATUS
-StartProcessIptTrace (
+StartProcessIptTracing (
     _In_ HANDLE ProcessHandle,
     _In_ IPT_OPTIONS Options
 );
 
 NTSTATUS
-StopProcessIptTrace (
+StopProcessIptTracing (
     _In_ HANDLE ProcessHandle
 );
 
@@ -145,4 +152,56 @@ RegisterExtendedImageForIptTracing (
     _In_ IPT_OPTIONS Options,
     _In_ ULONG NumberOfTries,
     _In_ ULONG TraceDurationInSeconds
+);
+
+NTSTATUS
+PauseThreadIptTracing (
+    _In_ HANDLE ThreadHandle,
+    _Out_ PBOOLEAN Result
+);
+
+NTSTATUS
+ResumeThreadIptTracing (
+    _In_ HANDLE ThreadHandle,
+    _Out_ PBOOLEAN Result
+);
+
+NTSTATUS
+QueryProcessIptTracing (
+    _In_ HANDLE ProcessHandle,
+    _Out_ PIPT_OPTIONS Options
+);
+
+NTSTATUS
+QueryCoreIptTracing (
+    _Out_ PIPT_OPTIONS Options
+);
+
+NTSTATUS
+StopTraceOnEachCore (
+    VOID
+);
+
+NTSTATUS
+ConfigureThreadAddressFilterRange (
+    _In_ HANDLE ThreadHandle,
+    _In_ ULONG RangeIndex,
+    _In_ IPT_FILTER_RANGE_SETTINGS RangeConfig,
+    _In_ ULONG64 StartAddress,
+    _In_ ULONG64 EndAddress
+);
+
+NTSTATUS
+QueryThreadAddressFilterRange (
+    _In_ HANDLE ThreadHandle,
+    _In_ ULONG RangeIndex,
+    _Out_ PIPT_FILTER_RANGE_SETTINGS RangeConfig,
+    _Out_ PULONG64 StartAddress,
+    _Out_ PULONG64 EndAddress
+);
+
+NTSTATUS
+QueryThreadTraceStopRangeEntered (
+    _In_ HANDLE ThreadHandle,
+    _Out_ PBOOLEAN TraceStopRangeEntered
 );

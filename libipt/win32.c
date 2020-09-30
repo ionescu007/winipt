@@ -467,7 +467,7 @@ RegisterExtendedImageForIptTracing (
 BOOL
 PauseThreadIptTracing (
     _In_ HANDLE hThread,
-    _In_ PBOOLEAN pbResult
+    _Out_ PBOOLEAN pbResult
     )
 {
     BOOL bRes;
@@ -509,7 +509,7 @@ PauseThreadIptTracing (
 BOOL
 ResumeThreadIptTracing (
     _In_ HANDLE hThread,
-    _In_ PBOOLEAN pbResult
+    _Out_ PBOOLEAN pbResult
     )
 {
     BOOL bRes;
@@ -630,3 +630,137 @@ QueryCoreIptTracing (
     return bRes;
 }
 
+BOOL
+StopTraceOnEachCore (
+    VOID
+    )
+{
+    BOOL bRes;
+    HANDLE hIpt;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    bRes = OpenIptDevice(&hIpt);
+    if (bRes != FALSE)
+    {
+        InitializeIptBuffer(&inputBuffer, IptStopTraceOnEachCore);
+        bRes = DeviceIoControl(hIpt,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer),
+            NULL,
+            NULL);
+        CloseHandle(hIpt);
+    }
+    return bRes;
+}
+
+BOOL
+ConfigureThreadAddressFilterRange (
+    _In_ HANDLE hThread,
+    _In_ DWORD dwRangeIndex,
+    _In_ IPT_FILTER_RANGE_SETTINGS dwRangeConfig,
+    _In_ DWORD64 ullStartAddress,
+    _In_ DWORD64 ullEndAddress
+    )
+{
+    BOOL bRes;
+    HANDLE hIpt;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    bRes = OpenIptDevice(&hIpt);
+    if (bRes != FALSE)
+    {
+        InitializeIptBuffer(&inputBuffer, IptConfigureThreadAddressFilterRange);
+        inputBuffer.ConfigureThreadAddressFilterRange.ThreadHandle = (ULONG64)hThread;
+        inputBuffer.ConfigureThreadAddressFilterRange.RangeIndex = dwRangeIndex;
+        inputBuffer.ConfigureThreadAddressFilterRange.RangeConfig = dwRangeConfig;
+        inputBuffer.ConfigureThreadAddressFilterRange.StartAddress = ullStartAddress;
+        inputBuffer.ConfigureThreadAddressFilterRange.EndAddress = ullEndAddress;
+        bRes = DeviceIoControl(hIpt,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer),
+            NULL,
+            NULL);
+        CloseHandle(hIpt);
+    }
+    return bRes;
+}
+
+BOOL
+QueryThreadAddressFilterRange (
+    _In_ HANDLE hThread,
+    _In_ DWORD dwRangeIndex,
+    _Out_ PIPT_FILTER_RANGE_SETTINGS pdwRangeConfig,
+    _Out_ PDWORD64 pullStartAddress,
+    _Out_ PDWORD64 pullEndAddress
+    )
+{
+    BOOL bRes;
+    HANDLE hIpt;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    bRes = OpenIptDevice(&hIpt);
+    if (bRes != FALSE)
+    {
+        InitializeIptBuffer(&inputBuffer, IptQueryThreadAddressFilterRange);
+        inputBuffer.QueryThreadAddressFilterRange.ThreadHandle = (ULONG64)hThread;
+        inputBuffer.QueryThreadAddressFilterRange.RangeIndex = dwRangeIndex;
+        bRes = DeviceIoControl(hIpt,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer),
+            NULL,
+            NULL);
+        if (bRes != FALSE)
+        {
+            *pdwRangeConfig = outputBuffer.QueryThreadAddressFilterRange.RangeConfig;
+            *pullStartAddress = outputBuffer.QueryThreadAddressFilterRange.StartAddress;
+            *pullEndAddress = outputBuffer.QueryThreadAddressFilterRange.EndAddress;
+        }
+        CloseHandle(hIpt);
+    }
+    return bRes;
+}
+
+BOOL
+QueryThreadTraceStopRangeEntered (
+    _In_ HANDLE hThread,
+    _Out_ PBOOLEAN pbTraceStopRangeEntered
+    )
+{
+    BOOL bRes;
+    HANDLE hIpt;
+    IPT_INPUT_BUFFER inputBuffer;
+    IPT_OUTPUT_BUFFER outputBuffer;
+
+    bRes = OpenIptDevice(&hIpt);
+    if (bRes != FALSE)
+    {
+        InitializeIptBuffer(&inputBuffer, IptQueryThreadTraceStopRangeEntered);
+        inputBuffer.QueryThreadTraceStopRangeEntered.ThreadHandle = (ULONG64)hThread;
+        bRes = DeviceIoControl(hIpt,
+            IOCTL_IPT_REQUEST,
+            &inputBuffer,
+            sizeof(inputBuffer),
+            &outputBuffer,
+            sizeof(outputBuffer),
+            NULL,
+            NULL);
+        if (bRes != FALSE)
+        {
+            *pbTraceStopRangeEntered = outputBuffer.QueryThreadTraceStopRangeEntered.TraceStopRangeEntered;
+        }
+        CloseHandle(hIpt);
+    }
+    return bRes;
+}
