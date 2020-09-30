@@ -723,15 +723,15 @@ StopTraceOnEachCore (
     {
         InitializeIptBuffer(&inputBuffer, IptStopTraceOnEachCore);
         status = NtDeviceIoControlFile(iptHandle,
-            NULL,
-            NULL,
-            NULL,
-            &ioStatusBlock,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer));
+                                       NULL,
+                                       NULL,
+                                       NULL,
+                                       &ioStatusBlock,
+                                       IOCTL_IPT_REQUEST,
+                                       &inputBuffer,
+                                       sizeof(inputBuffer),
+                                       &outputBuffer,
+                                       sizeof(outputBuffer));
         NtClose(iptHandle);
     }
     return status;
@@ -762,15 +762,15 @@ ConfigureThreadAddressFilterRange (
         inputBuffer.ConfigureThreadAddressFilterRange.StartAddress = StartAddress;
         inputBuffer.ConfigureThreadAddressFilterRange.EndAddress = EndAddress;
         status = NtDeviceIoControlFile(iptHandle,
-            NULL,
-            NULL,
-            NULL,
-            &ioStatusBlock,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer));
+                                       NULL,
+                                       NULL,
+                                       NULL,
+                                       &ioStatusBlock,
+                                       IOCTL_IPT_REQUEST,
+                                       &inputBuffer,
+                                       sizeof(inputBuffer),
+                                       &outputBuffer,
+                                       sizeof(outputBuffer));
         NtClose(iptHandle);
     }
     return status;
@@ -798,15 +798,15 @@ QueryThreadAddressFilterRange (
         inputBuffer.QueryThreadAddressFilterRange.ThreadHandle = (ULONG64)ThreadHandle;
         inputBuffer.QueryThreadAddressFilterRange.RangeIndex = RangeIndex;
         status = NtDeviceIoControlFile(iptHandle,
-            NULL,
-            NULL,
-            NULL,
-            &ioStatusBlock,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer));
+                                       NULL,
+                                       NULL,
+                                       NULL,
+                                       &ioStatusBlock,
+                                       IOCTL_IPT_REQUEST,
+                                       &inputBuffer,
+                                       sizeof(inputBuffer),
+                                       &outputBuffer,
+                                       sizeof(outputBuffer));
         if (NT_SUCCESS(status))
         {
             *RangeConfig = outputBuffer.QueryThreadAddressFilterRange.RangeConfig;
@@ -836,15 +836,15 @@ QueryThreadTraceStopRangeEntered (
         InitializeIptBuffer(&inputBuffer, IptQueryThreadTraceStopRangeEntered);
         inputBuffer.QueryThreadTraceStopRangeEntered.ThreadHandle = (ULONG64)ThreadHandle;
         status = NtDeviceIoControlFile(iptHandle,
-            NULL,
-            NULL,
-            NULL,
-            &ioStatusBlock,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer));
+                                       NULL,
+                                       NULL,
+                                       NULL,
+                                       &ioStatusBlock,
+                                       IOCTL_IPT_REQUEST,
+                                       &inputBuffer,
+                                       sizeof(inputBuffer),
+                                       &outputBuffer,
+                                       sizeof(outputBuffer));
         if (NT_SUCCESS(status))
         {
             *TraceStopRangeEntered = outputBuffer.QueryThreadTraceStopRangeEntered.TraceStopRangeEntered;

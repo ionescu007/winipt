@@ -728,7 +728,9 @@ Banner:
         }
 
         dwRangeConfig = wcstoull(pwszArguments[6], NULL, 0);
-        if (dwRangeConfig != IptFilterRangeDisable && dwRangeConfig != IptFilterRangeIp && dwRangeConfig != IptFilterRangeTraceStop)
+        if ((dwRangeConfig != IptFilterRangeDisable) && 
+            (dwRangeConfig != IptFilterRangeIp) && 
+            (dwRangeConfig != IptFilterRangeTraceStop))
         {
             wprintf(L"[-] Invalid flags: %u\n", dwRangeConfig);
             goto Cleanup;
@@ -1013,11 +1015,15 @@ Banner:
 
         case IptTlConfigureFilter:
         {
-            bRes = ConfigureThreadAddressFilterRange(hThread, dwRangeIndex, dwRangeConfig, ullStartAddress, ullEndAddress);
+            bRes = ConfigureThreadAddressFilterRange(hThread, 
+                                                     dwRangeIndex, 
+                                                     dwRangeConfig, 
+                                                     ullStartAddress, 
+                                                     ullEndAddress);
             if (bRes == FALSE)
             {
                 wprintf(L"[-] Failed to configure address filter range (err=%d)\n",
-                    GetLastError());
+                        GetLastError());
                 goto Cleanup;
             }
 
@@ -1029,11 +1035,15 @@ Banner:
 
         case IptTlQueryFilter:
         {
-            bRes = QueryThreadAddressFilterRange(hThread, dwRangeIndex, &dwRangeConfig, &ullStartAddress, &ullEndAddress);
+            bRes = QueryThreadAddressFilterRange(hThread, 
+                                                 dwRangeIndex, 
+                                                 &dwRangeConfig, 
+                                                 &ullStartAddress, 
+                                                 &ullEndAddress);
             if (bRes == FALSE)
             {
                 wprintf(L"[-] Failed to query address filter range (err=%d)\n",
-                    GetLastError());
+                        GetLastError());
                 goto Cleanup;
             }
 
@@ -1044,7 +1054,10 @@ Banner:
                     pwszArguments[2],
                     ullStartAddress,
                     ullEndAddress,
-                    dwRangeConfig == IptFilterRangeDisable ? L"Disabled" : (dwRangeConfig == IptFilterRangeIp ? L"IP" : L"TraceStop"));
+                    (dwRangeConfig == IptFilterRangeDisable) ? 
+                    L"Disabled" : 
+                    (dwRangeConfig == IptFilterRangeIp) ? 
+                    L"IP" : L"TraceStop");
             dwResult = 0;
             break;
         }
@@ -1055,17 +1068,19 @@ Banner:
             if (bRes == FALSE)
             {
                 wprintf(L"[-] Failed to query address filter range (err=%d)\n",
-                    GetLastError());
+                        GetLastError());
                 goto Cleanup;
             }
 
             if (bTraceStop != FALSE)
             {
-                wprintf(L"[+] TraceStop has been triggered for TID %s\n", pwszArguments[2]);
+                wprintf(L"[+] TraceStop has been triggered for TID %s\n", 
+                        pwszArguments[2]);
             }
             else
             {
-                wprintf(L"[+] TraceStop has NOT been triggered for TID %s\n", pwszArguments[2]);
+                wprintf(L"[+] TraceStop has NOT been triggered for TID %s\n", 
+                        pwszArguments[2]);
             }
             dwResult = 0;
             break;

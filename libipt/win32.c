@@ -645,13 +645,13 @@ StopTraceOnEachCore (
     {
         InitializeIptBuffer(&inputBuffer, IptStopTraceOnEachCore);
         bRes = DeviceIoControl(hIpt,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer),
-            NULL,
-            NULL);
+                               IOCTL_IPT_REQUEST,
+                               &inputBuffer,
+                               sizeof(inputBuffer),
+                               &outputBuffer,
+                               sizeof(outputBuffer),
+                               NULL,
+                               NULL);
         CloseHandle(hIpt);
     }
     return bRes;
@@ -681,13 +681,13 @@ ConfigureThreadAddressFilterRange (
         inputBuffer.ConfigureThreadAddressFilterRange.StartAddress = ullStartAddress;
         inputBuffer.ConfigureThreadAddressFilterRange.EndAddress = ullEndAddress;
         bRes = DeviceIoControl(hIpt,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer),
-            NULL,
-            NULL);
+                               IOCTL_IPT_REQUEST,
+                               &inputBuffer,
+                               sizeof(inputBuffer),
+                               &outputBuffer,
+                               sizeof(outputBuffer),
+                               NULL,
+                               NULL);
         CloseHandle(hIpt);
     }
     return bRes;
@@ -714,13 +714,13 @@ QueryThreadAddressFilterRange (
         inputBuffer.QueryThreadAddressFilterRange.ThreadHandle = (ULONG64)hThread;
         inputBuffer.QueryThreadAddressFilterRange.RangeIndex = dwRangeIndex;
         bRes = DeviceIoControl(hIpt,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer),
-            NULL,
-            NULL);
+                               IOCTL_IPT_REQUEST,
+                               &inputBuffer,
+                               sizeof(inputBuffer),
+                               &outputBuffer,
+                               sizeof(outputBuffer),
+                               NULL,
+                               NULL);
         if (bRes != FALSE)
         {
             *pdwRangeConfig = outputBuffer.QueryThreadAddressFilterRange.RangeConfig;
@@ -749,13 +749,13 @@ QueryThreadTraceStopRangeEntered (
         InitializeIptBuffer(&inputBuffer, IptQueryThreadTraceStopRangeEntered);
         inputBuffer.QueryThreadTraceStopRangeEntered.ThreadHandle = (ULONG64)hThread;
         bRes = DeviceIoControl(hIpt,
-            IOCTL_IPT_REQUEST,
-            &inputBuffer,
-            sizeof(inputBuffer),
-            &outputBuffer,
-            sizeof(outputBuffer),
-            NULL,
-            NULL);
+                               IOCTL_IPT_REQUEST,
+                               &inputBuffer,
+                               sizeof(inputBuffer),
+                               &outputBuffer,
+                               sizeof(outputBuffer),
+                               NULL,
+                               NULL);
         if (bRes != FALSE)
         {
             *pbTraceStopRangeEntered = outputBuffer.QueryThreadTraceStopRangeEntered.TraceStopRangeEntered;
