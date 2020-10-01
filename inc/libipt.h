@@ -25,7 +25,7 @@ typedef enum _IPT_MATCH_SETTINGS
     IptMatchByImageFileName,
     IptMatchByAnyPackage,
     IptMatchByPackageName,
-} IPT_MATCH_SETTINGS;
+} IPT_MATCH_SETTINGS, *PIPT_MATCH_SETTINGS;
 
 //
 // See GetIptOptionForTracingThreads vs GetIptOptionForTracingCores
@@ -45,14 +45,21 @@ typedef enum _IPT_MODE_SETTINGS
     IptRegUserModeOnly,                 // Sets BranchEn[2000], ToPA[100], User[8]
     IptRegKernelModeOnly,               // Sets BranchEn[2000], ToPA[100], OS[4]
     IptRegUserAndKernelMode,            // Sets BranchEn[2000], ToPA[100], User[8], OS[4]
-} IPT_MODE_SETTINGS;
+} IPT_MODE_SETTINGS, *PIPT_MODE_SETTINGS;
 
 typedef enum IPT_TIMING_SETTINGS
 {
     IptNoTimingPackets,                 // No additional IA32_RTIT_CTL bits enabled
-    IptEnableMtcPackets,                // Sets MTCEn[400], TSCEn[200]. Requires CPUID.(EAX=014H,ECX=0H):EBX[3]= 1
-    IptEnableCycPackets                 // Sets MTCEn[400], TSCEn[200], CYCEn[2]. Requires CPUID.(EAX=014H,ECX=0H):EBX[1]= 1
-} IPT_TIMING_SETTINGS;
+    IptEnableMtcPackets,                // Sets MTCEn[200], TSCEn[400]. Requires CPUID.(EAX=014H,ECX=0H):EBX[3]= 1
+    IptEnableCycPackets                 // Sets MTCEn[200], TSCEn[400], CYCEn[2]. Requires CPUID.(EAX=014H,ECX=0H):EBX[1]= 1
+} IPT_TIMING_SETTINGS, *PIPT_TIMING_SETTINGS;
+
+typedef enum _IPT_FILTER_RANGE_SETTINGS
+{
+    IptFilterRangeDisable,              // Sets ADDRn_CFG[0]
+    IptFilterRangeIp,                   // Sets ADDRn_CFG[1]
+    IptFilterRangeTraceStop,            // Sets ADDRn_CFG[2]
+} IPT_FILTER_RANGE_SETTINGS, *PIPT_FILTER_RANGE_SETTINGS;
 
 //
 // See CheckIptOption
@@ -150,13 +157,13 @@ RegisterExtendedImageForIptTracing (
 BOOL
 PauseThreadIptTracing (
     _In_ HANDLE hThread,
-    _In_ PBOOLEAN pbResult
+    _Out_ PBOOLEAN pbResult
 );
 
 BOOL
 ResumeThreadIptTracing (
     _In_ HANDLE hThread,
-    _In_ PBOOLEAN pbResult
+    _Out_ PBOOLEAN pbResult
 );
 
 BOOL
@@ -168,4 +175,33 @@ QueryProcessIptTracing (
 BOOL
 QueryCoreIptTracing (
     _Out_ PIPT_OPTIONS pullOptions
+);
+
+BOOL
+StopTraceOnEachCore (
+    VOID
+);
+
+BOOL
+ConfigureThreadAddressFilterRange (
+    _In_ HANDLE hThread,
+    _In_ DWORD dwRangeIndex,
+    _In_ IPT_FILTER_RANGE_SETTINGS dwRangeConfig,
+    _In_ DWORD64 ullStartAddress,
+    _In_ DWORD64 ullEndAddress
+);
+
+BOOL
+QueryThreadAddressFilterRange (
+    _In_ HANDLE hThread,
+    _In_ DWORD dwRangeIndex,
+    _Out_ PIPT_FILTER_RANGE_SETTINGS pdwRangeConfig,
+    _Out_ PDWORD64 pullStartAddress,
+    _Out_ PDWORD64 pullEndAddress
+);
+
+BOOL
+QueryThreadTraceStopRangeEntered (
+    _In_ HANDLE hThread,
+    _Out_ PBOOLEAN pbTraceStopRangeEntered
 );

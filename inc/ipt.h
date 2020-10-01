@@ -17,7 +17,12 @@ typedef enum _IPT_INPUT_TYPE
     IptPauseThreadTrace,
     IptResumeThreadTrace,
     IptQueryProcessTrace,
-    IptQueryCoreTrace
+    IptQueryCoreTrace,
+    // Requests available since Windows 10 v2004
+    IptStopTraceOnEachCore = 12,
+    IptConfigureThreadAddressFilterRange,
+    IptQueryThreadAddressFilterRange,
+    IptQueryThreadTraceStopRangeEntered,
 } IPT_INPUT_TYPE, *PIPT_INPUT_TYPE;
 
 //
@@ -84,9 +89,26 @@ typedef struct _IPT_INPUT_BUFFER
         {
             ULONG64 ProcessHandle;
         } QueryProcessIptTrace;
+        struct
+        {
+            ULONG64 ThreadHandle;
+            ULONG RangeIndex;
+            ULONG RangeConfig;
+            ULONG64 StartAddress;
+            ULONG64 EndAddress;
+        } ConfigureThreadAddressFilterRange;
+        struct
+        {
+            ULONG64 ThreadHandle;
+            ULONG RangeIndex;
+        } QueryThreadAddressFilterRange;
+        struct
+        {
+            ULONG64 ThreadHandle;
+        } QueryThreadTraceStopRangeEntered;
     };
 } IPT_INPUT_BUFFER, *PIPT_INPUT_BUFFER;
-C_ASSERT(sizeof(IPT_INPUT_BUFFER) == 0x28);
+C_ASSERT(sizeof(IPT_INPUT_BUFFER) == 0x30);
 
 //
 // IOCTL Output Request Buffer
@@ -128,9 +150,19 @@ typedef struct _IPT_OUTPUT_BUFFER
         {
             IPT_OPTIONS Options;
         } QueryCoreTrace;
+        struct
+        {
+            ULONG RangeConfig;
+            ULONG64 StartAddress;
+            ULONG64 EndAddress;
+        } QueryThreadAddressFilterRange;
+        struct
+        {
+            BOOLEAN TraceStopRangeEntered;
+        } QueryThreadTraceStopRangeEntered;
     };
 } IPT_OUTPUT_BUFFER, *PIPT_OUTPUT_BUFFER;
-C_ASSERT(sizeof(IPT_OUTPUT_BUFFER) == 0x10);
+C_ASSERT(sizeof(IPT_OUTPUT_BUFFER) == 0x18);
 
 //
 // IOCTLs that the IPT Driver Handles
