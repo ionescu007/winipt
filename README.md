@@ -5,7 +5,7 @@ The Windows Library for Intel Process Trace (WinIPT) is a project that leverages
 This is the Win32 API version of the library which grants access to the IPT Driver/Service IOCTLs that enable per-core and per-process tracing with the new facilities exposed by Windows. This library uses Win32 semantics & notation, and its functions are re-implementations of some of the functions that were found in `Dbghelp.dll`, `Dbgcore.dll`, `TTDRecordCPU.dll`, `Faultrep.dll` and `Ntdll.dll`.
 
 * `libiptnt`
-This is the native NT API version of the same library as above, which uses only Ntdll.dll functions, making it suitable for use in Native/non-Win32 applications. This library uses NT-style semantics & notication, and its functions are almost identical to the ones exposed by the libraries listed above.
+This is the native NT API version of the same library as above, which uses only Ntdll.dll functions, making it suitable for use in Native/non-Win32 applications. This library uses NT-style semantics & notification, and its functions are almost identical to the ones exposed by the libraries listed above.
 
 * `ipttool`
 This acts as a sample for the libipt static library referenced above, and provides a simple CLI utility around starting, stopping, and querying traces for a given process. It does not currently support core tracing, and it does not do decoding -- please use the Intel PT library for that.
@@ -24,11 +24,11 @@ Currently, this support seems to be specific to PSS/OCA scenarios (Microsoft's c
 
 ## Caveat
 
-As per my previous note on existing drivers being of PoC-level quality, this repository is also a PoC and all of the libraries and tool presented here are provided with zero guarantees on their functionality, and no support (I will, however, strive to address PRs and other helpful comments!). Please do not ship commercial/enteprise/paid products using this library -- I am sure Microsoft and Intel will eventually ship an official set of APIs or SDK for such purposes.
+As per my previous note on existing drivers being of PoC-level quality, this repository is also a PoC and all of the libraries and tool presented here are provided with zero guarantees on their functionality, and no support (I will, however, strive to address PRs and other helpful comments!). Please do not ship commercial/enterprise/paid products using this library -- I am sure Microsoft and Intel will eventually ship an official set of APIs or SDK for such purposes.
 
 ## References
 
-The official specification of Intel Processor Trace is available from [Intel](https://software.intel.com/en-us/blogs/2013/09/18/processor-tracing) and shoudl be perused if this is your first time learning about this technology.
+The official specification of Intel Processor Trace is available from [Intel](https://software.intel.com/en-us/blogs/2013/09/18/processor-tracing) and should be perused if this is your first time learning about this technology.
 
 For some highly recommended reading on potential applications to security, I suggest reading the following presentations from Richard Johnson & Andrea Alevi: [Go Speed Tracer](https://talos-intelligence-site.s3.amazonaws.com/production/document_files/files/000/000/048/original/Go_Speed_Tracer.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXACIED2SPMSC7GA%2F20180711%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180711T075012Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7b8003bc3582e408522594913240c92a0608201f716f607111973d8c17eeafa2), [Harnessing Intel Processor Trace on Windows for Vulnerability Disclosure](https://conference.hitb.org/hitbsecconf2017ams/materials/D1T1%20-%20Richard%20Johnson%20-%20Harnessing%20Intel%20Processor%20Trace%20on%20Windows%20for%20Vulnerability%20Discovery.pdf) as well as this presentation: [COFI Break](https://gsec.hitb.org/materials/sg2016/D2%20-%20Shlomi%20Oberman%20and%20Ron%20Shina%20-%20Breaking%20Exploits%20with%20Practical%20Control%20Flow%20Integrity.pdf) by Shlomi Oberman and Ron Shina. 
 
